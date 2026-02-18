@@ -1,45 +1,23 @@
-# fly.toml - Ollama r1-1776:70b deployment
-app = "ollama-r1-1776"
-primary_region = "ams"
+# fly.toml app configuration file generated for ollama-r1-1776 on 2026-02-18T06:44:28Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'ollama-r1-1776'
+primary_region = 'ams'
 
 [build]
-  dockerfile = "Dockerfile"
 
-[env]
-  OLLAMA_HOST = "0.0.0.0:11434"
-  OLLAMA_KEEP_ALIVE = "-1"
-  OLLAMA_NUM_PARALLEL = "4"
-  OLLAMA_FLASH_ATTENTION = "1"
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
-[[services]]
-  internal_port = 11434
-  protocol = "tcp"
-
-  [[services.ports]]
-    port = 80
-    handlers = ["http"]
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-
-  [services.concurrency]
-    type = "requests"
-    hard_limit = 50
-    soft_limit = 25
-
-  [[services.http_checks]]
-    interval = "30s"
-    timeout = "10s"
-    grace_period = "300s"
-    method = "GET"
-    path = "/api/tags"
-
-[mounts]
-  source = "ollama_models"
-  destination = "/root/.ollama"
-
-# GPU machine - wymagane dla 70b
 [[vm]]
-  size = "a100-40gb"
-  memory = "40gb"
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 131072
